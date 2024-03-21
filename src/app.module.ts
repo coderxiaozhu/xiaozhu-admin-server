@@ -1,18 +1,22 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { I18nModule, QueryResolver, AcceptLanguageResolver } from 'nestjs-i18n'
 import * as path from 'path'
+import config from './config'
 import { UserModule } from './user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CacheModule } from './cache/cache.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { AuthInterceptor } from "./common/interceptor/auth.interceptor";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      ignoreEnvFile: true,
       isGlobal: true,
+      load: [...config]
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -37,8 +41,15 @@ import { CacheModule } from './cache/cache.module';
     }),
     UserModule,
     CacheModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService, ConfigService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuthInterceptor
+    }
+  ],
 })
 export class AppModule {}

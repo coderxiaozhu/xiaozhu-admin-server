@@ -5,6 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ApiException } from "./api.exception";
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -13,10 +14,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus()
+    // if (exception instanceof ApiException) {
+    //   response.status(status).json({
+    //     code: exception.getErrorCode(),
+    //     timestamp: new Date().toISOString(),
+    //     path: request.url,
+    //     message: exception.getErrorMessage(),
+    //   });
+    //   return;
+    // }
     response.status(status).json({
-      status: status,
-      timestamp: new Date().toString(),
+      code: status,
+      timestamp: new Date().toISOString(),
       path: request.url,
+      message: exception.message,
     });
   }
 }

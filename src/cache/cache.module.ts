@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from "@nestjs/config";
 import { createClient } from 'redis';
 import { CacheService } from './cache.service';
 
 @Module({
   providers: [
-    CacheService,
     {
       provide: 'REDIS_CLIENT',
       async useFactory() {
@@ -19,6 +19,6 @@ import { CacheService } from './cache.service';
       }
     },
   ],
-  exports: [CacheService]
+  exports: ['REDIS_CLIENT']
 })
 export class CacheModule {}

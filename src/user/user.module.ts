@@ -9,5 +9,6 @@ import { CacheModule } from 'src/cache/cache.module';
   imports: [TypeOrmModule.forFeature([User]), CacheModule],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService]
 })
 export class UserModule {}
